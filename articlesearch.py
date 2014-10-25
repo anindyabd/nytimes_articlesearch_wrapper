@@ -11,12 +11,17 @@ class ArticleSearch(object):
 
     response = ""
 
-    params = {'api-key':api_key, 'q': 'Obama'}
+    q = ""
+
+    fl = ""
 
     def __init__(self, query_dict=None):
         pass 
 
     def set_api_key(self, api_key):
+        """
+        Set the API key for your ArticleSearch object.
+        """
         self.api_key = api_key
 
     def set_format(self, format_str):
@@ -26,14 +31,46 @@ class ArticleSearch(object):
         """
         if format_str != 'json' or format_str != 'jsonp':
             raise ValueError("Wrong format.")
-        self.response_format = format_str  
+        self.response_format = format_str 
+
+    def search_terms(self, q):
+        """
+        Enter the search-query terms. It should be one string.
+        Instead of spaces, put in + sign to separate words, e.g. new+york+times.
+        """
+        self.q = q 
+
+    def set_return_fields(self, fields):
+        """
+        Sets the return fields specified in the fields parameter. fields 
+        should be a string containing the fields delimited by commas; no spaces allowed.
+        """
+        self.fl = fields
 
     def make_request(self):
+        params = {'api-key': self.api_key, 'q': self.q, 'fl':self.fl}
         request_url = self.base_url + self.response_format
-        self.response = requests.get(request_url, params=self.params)
-        print self.response.text 
+        self.response = requests.get(request_url, params=params)
+        
+    def get_response(self):
+        """
+        Get the response object associated with this instance of your ArticleSearch object.
+        This will be an empty string unless you called make_request().
+        """
+        return self.response
 
-# Testing 
+    def get_decoded_response(self):
+        """
+        Get the decoded response.
+        """
+        return self.response.json()
+
+    
+# Example: 
 if __name__ == '__main__':
     articlesearch = ArticleSearch()
+    articlesearch.search_terms("new+york+times")
+    articlesearch.set_return_fields("snippet,lead_paragraph")
     articlesearch.make_request()
+    decoded_response = articlesearch.get_decoded_response()
+    print decoded_response

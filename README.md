@@ -3,6 +3,8 @@ NY Times Article Search Wrapper
 
 Unofficial Python wrapper for the NY Times Article Search API.
 
+API docs: http://developer.nytimes.com/docs/read/article_search_api_v2
+
 Example usage:
 
 ```python

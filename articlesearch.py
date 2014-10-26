@@ -1,22 +1,33 @@
 import os 
-import requests 
+import requests  
 
 class ArticleSearch(object): 
 
     base_url = r'http://api.nytimes.com/svc/search/v2/articlesearch.'
 
-    response_format = 'json'
+    response_format = 'json' 
 
-    api_key = os.getenv('APIKEY')
+    api_key = os.getenv('API_KEY')
 
     response = ""
+
+    params = None 
 
     q = ""
 
     fl = ""
 
-    def __init__(self, query_dict=None):
-        pass 
+    made_request = False
+
+
+    def __init__(self, params=None):
+        """ Initializes the ArticleSearch class.
+        Queries for the API call can either be passed as a dictionary
+        to the initializer to the `params` parameter, or the queries 
+        can be set separately with the `set` methods."""
+        if params != None:
+            self.params = params 
+
 
     def set_api_key(self, api_key):
         """
@@ -48,21 +59,28 @@ class ArticleSearch(object):
         self.fl = fields
 
     def make_request(self):
-        params = {'api-key': self.api_key, 'q': self.q, 'fl':self.fl}
+        if self.params == None:
+            params = {'api-key': self.api_key, 'q': self.q, 'fl':self.fl}
+        else:
+            params = self.params
         request_url = self.base_url + self.response_format
         self.response = requests.get(request_url, params=params)
+        self.made_request = True
         
     def get_response(self):
         """
         Get the response object associated with this instance of your ArticleSearch object.
-        This will be an empty string unless you called make_request().
         """
+        if not self.made_request:
+            return "You didn't make an API call yet! Make a request with the make_request() method."
         return self.response
 
     def get_decoded_response(self):
         """
         Get the decoded response.
         """
+        if not self.made_request:
+            return "You didn't make an API call yet! Make a request with the make_request() method."
         return self.response.json()
 
     

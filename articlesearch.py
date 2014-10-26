@@ -3,37 +3,31 @@ import requests
 
 class ArticleSearch(object): 
 
+    # The base_url is shared across all instances of ArticleSearch
     base_url = r'http://api.nytimes.com/svc/search/v2/articlesearch.'
 
-    response_format = 'json' 
-
-    api_key = os.getenv('API_KEY')
-
-    response = ""
-
-    params = None 
-
-    q = ""
-
-    fl = ""
-
-    made_request = False
-
-
-    def __init__(self, params=None):
+    def __init__(self, params=None, response_format=None):
         """ Initializes the ArticleSearch class.
         Queries for the API call can either be passed as a dictionary
-        to the initializer to the `params` parameter, or the queries 
+        using the `params` parameter when initializing the class, or they 
         can be set separately with the `set` methods."""
+        if response_format = None:
+            self.response_format = json # default response format 
+        else:
+            self.response_format = response_format 
         if params != None:
             self.params = params 
-
+        else:
+            self.params = {} 
+            self.response_format = 'json' 
+            self.params['api-key'] = os.getenv('API_KEY')
+            self.made_request = False
 
     def set_api_key(self, api_key):
         """
         Set the API key for your ArticleSearch object.
         """
-        self.api_key = api_key
+        self.params['api_key'] = api_key
 
     def set_format(self, format_str):
         """
@@ -49,20 +43,17 @@ class ArticleSearch(object):
         Enter the search-query terms. It should be one string.
         Instead of spaces, put in + sign to separate words, e.g. new+york+times.
         """
-        self.q = q 
+        self.params['q'] = q 
 
     def set_return_fields(self, fields):
         """
         Sets the return fields specified in the fields parameter. fields 
         should be a string containing the fields delimited by commas; no spaces allowed.
         """
-        self.fl = fields
+        self.params['fl'] = fields
 
     def make_request(self):
-        if self.params == None:
-            params = {'api-key': self.api_key, 'q': self.q, 'fl':self.fl}
-        else:
-            params = self.params
+        params = self.params
         request_url = self.base_url + self.response_format
         self.response = requests.get(request_url, params=params)
         self.made_request = True
@@ -90,5 +81,5 @@ if __name__ == '__main__':
     articlesearch.search_terms("new+york+times")
     articlesearch.set_return_fields("snippet,lead_paragraph")
     articlesearch.make_request()
-    decoded_response = articlesearch.get_decoded_response()
-    print decoded_response
+    response = articlesearch.get_response()
+    print response.text

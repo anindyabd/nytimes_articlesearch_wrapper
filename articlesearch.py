@@ -11,8 +11,8 @@ class ArticleSearch(object):
         Queries for the API call can either be passed as a dictionary
         using the `params` parameter when initializing the class, or they 
         can be set separately with the `set` methods."""
-        if response_format = None:
-            self.response_format = json # default response format 
+        if response_format == None:
+            self.response_format = 'json' # default response format 
         else:
             self.response_format = response_format 
         if params != None:
@@ -20,7 +20,8 @@ class ArticleSearch(object):
         else:
             self.params = {} 
             self.response_format = 'json' 
-            self.params['api-key'] = os.getenv('API_KEY')
+            
+            self.params['api-key'] = os.getenv('API_KEY') 
             self.made_request = False
 
     def set_api_key(self, api_key):
@@ -75,11 +76,3 @@ class ArticleSearch(object):
         return self.response.json()
 
     
-# Example: 
-if __name__ == '__main__':
-    articlesearch = ArticleSearch()
-    articlesearch.search_terms("new+york+times")
-    articlesearch.set_return_fields("snippet,lead_paragraph")
-    articlesearch.make_request()
-    response = articlesearch.get_response()
-    print response.text
